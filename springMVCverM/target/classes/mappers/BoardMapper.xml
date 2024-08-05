@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+[MySQL]
+title like CONCAT('%',#{keyword},'%')
+
+
+[Oracle]
+title like '%' ||  #{keyword} || '%'
+
+
+[MSSQL]
+title like '%' + #{keyword} + '%'
+ -->
+ 
+<mapper namespace="edu.study.mapper.boardMapper">
+	<select id="list" resultType="boardVO" parameterType="searchVO">
+		SELECT bidx
+		     , title
+		     , content
+		     , wdate
+		     , hit
+		     , uidx
+		     , ( select name from usertb where uidx = board.uidx ) as name
+		  FROM board
+		 WHERE 1=1 
+		  <if test="searchType == 'title'">
+		  	<!-- AND title like '%'||#{searchVal}||'%' -->
+		  	AND title like CONCAT('%',#{searchVal},'%')
+		  </if>
+		  <if test="searchType == 'content'">
+		  	AND content like CONCAT('%',#{searchVal},'%')
+		  </if>
+	</select>
+	
+	<select id="selectByBidx" parameterType="int" resultType="boardVO">
+		SELECT bidx
+		     , title
+		     , content
+		     , wdate
+		     , hit
+		     , uidx
+		  FROM board
+		 WHERE bidx = #{bidx}
+	</select>
+	
+	<update id="updateByBidx" parameterType="boardVO">
+		UPDATE board
+		   SET title = #{title}
+		     , content= #{content}
+		  WHERE bidx = #{bidx}
+	</update>
+	
+	<delete id="deleteByBidx" parameterType="int">
+		DELETE
+		  FROM board
+		 WHERE bidx = #{bidx}
+	</delete>
+	
+	<delete id="deleteFromReply" parameterType="int">
+<!-- 		DELETE
+		  FROM replytb
+		 WHERE bidx = #{bidx} -->
+	</delete>
+	
+	<insert id="insert" parameterType="boardVO" useGeneratedKeys="true" keyProperty="bidx">
+		<![CDATA[
+		INSERT INTO board (
+			  title
+			, content
+			, wdate
+			, uidx
+			, hit
+		)VALUES(
+			  #{title}
+			, #{content}
+			, now()
+			, #{uidx}
+			, 0
+		)
+		]]>
+<!-- 		<selectKey resultType="int" keyProperty="uidx" order="AFTER">
+ 			SELECT MAX(bidx)
+			  FROM boardtb
+		</selectKey> -->
+	</insert>
+</mapper>

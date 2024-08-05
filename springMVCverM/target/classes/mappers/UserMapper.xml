@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="edu.study.mapper.userMapper">
+	<select id="login" parameterType="userVO" resultType="userVO">
+		SELECT uidx
+		     , id
+		     , name
+		  FROM usertb
+		 WHERE id = #{id}
+		   AND pw =#{password}
+	</select>
+	<select id="selectById" parameterType="String" resultType="int">
+		SELECT COUNT(*)
+		  FROM usertb
+		 WHERE id = #{id}
+	</select>
+	<!-- insert된 레코드의 PK를 받아오는 속성 설정 -->
+	<!-- 입력으로 받은 vo중에 keyProperty 속성에 설정된 property로 반환  -->
+	<insert id="join" parameterType="userVO" useGeneratedKeys="true" keyProperty="uidx">
+	<!-- 특수문자를 문자열로 인식 -->
+	<![CDATA[
+		INSERT INTO usertb (
+		   id
+		  ,pw
+		  ,name
+		  )
+		VALUES (
+		   #{id}
+		  ,#{password}
+		  ,#{name}
+		)
+		 ]]>
+<!-- 		<selectKey keyProperty="uidx" resultType="Integer" order="AFTER">
+			select last_insert_id() as uidx
+		</selectKey>
+ --> 	</insert>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
